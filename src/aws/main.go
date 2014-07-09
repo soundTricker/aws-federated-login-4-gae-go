@@ -8,7 +8,6 @@ import (
 	"github.com/bridger/aws4"
 	"io/ioutil"
 	"net/http"
-	"strings"
 )
 
 func init() {
@@ -25,13 +24,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !strings.HasSuffix(u.Email, "@bfts.co.jp") {
-		http.Error(w, "Forbidden", http.StatusForbidden)
-		return
-	}
-
-	c.Debugf(u.Email)
-
 	var keys *aws4.Keys
 	if b, err := ioutil.ReadFile("resources/AWSCredentials.json"); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
@@ -41,7 +33,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	username := strings.TrimSuffix(u.Email, "@bfts.co.jp")
+	username := u.Email
 
 	sts := &Sts{
 		Client: &aws4.Client{
